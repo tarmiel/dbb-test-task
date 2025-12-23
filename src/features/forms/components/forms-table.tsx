@@ -1,3 +1,4 @@
+import { buttonVariants } from '@/components/ui/button';
 import {
   Table,
   TableBody,
@@ -89,10 +90,13 @@ export function FormsTable({ forms, isAdmin }: FormsTableProps) {
                 <TableCell className="text-right">
                   <Link
                     href={AppPaths.app.form.getHref(form.id)}
-                    className="inline-flex items-center gap-1 text-primary hover:underline focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+                    className={buttonVariants({
+                      size: 'icon',
+                      variant: 'secondary'
+                    })}
+                    title={'Edit'}
                   >
                     <Pencil className="size-3.5" />
-                    Edit
                   </Link>
                 </TableCell>
               )}

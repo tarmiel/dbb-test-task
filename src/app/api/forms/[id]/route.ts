@@ -1,8 +1,9 @@
+import { z } from 'zod';
 import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
 import { USER_ROLE } from '@/features/auth/schemas/auth-schema';
 import { formsStore } from '@/features/forms/data/forms-store';
-import { formSchema } from '@/features/forms/schemas/form-schema';
+import { formInputSchema } from '@/features/forms/schemas/form-schema';
 
 type RouteParams = { params: Promise<{ id: string }> };
 
@@ -27,10 +28,10 @@ export async function PUT(request: Request, { params }: RouteParams) {
 
   const { id } = await params;
   const body = await request.json();
-  const result = formSchema.safeParse(body);
+  const result = formInputSchema.safeParse(body);
 
   if (!result.success) {
-    return NextResponse.json({ error: result.error.flatten() }, { status: 400 });
+    return NextResponse.json({ error: z.treeifyError(result.error) }, { status: 400 });
   }
 
   const updated = formsStore.update(id, result.data);

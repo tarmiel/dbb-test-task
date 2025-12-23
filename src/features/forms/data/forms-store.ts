@@ -1,4 +1,4 @@
-import { FORM_STATUS, type FormData, type FormRecord } from '../schemas/form-schema';
+import { FORM_STATUS, type FormInputData, type FormRecord } from '../schemas/form-schema';
 
 const SEED_DATA: FormRecord[] = [
   {
@@ -43,7 +43,7 @@ class FormsStore {
     return this.forms.find((form) => form.id === id);
   }
 
-  create(data: FormData): FormRecord {
+  create(data: FormInputData): FormRecord {
     const now = new Date().toISOString();
     const newForm: FormRecord = {
       ...data,
@@ -55,7 +55,7 @@ class FormsStore {
     return newForm;
   }
 
-  update(id: string, data: FormData): FormRecord | undefined {
+  update(id: string, data: Partial<FormInputData>): FormRecord | undefined {
     const index = this.forms.findIndex((form) => form.id === id);
     if (index === -1) return undefined;
 

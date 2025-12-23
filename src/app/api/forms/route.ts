@@ -3,7 +3,11 @@ import { cookies } from 'next/headers';
 import { type NextRequest, NextResponse } from 'next/server';
 import { USER_ROLE } from '@/features/auth/schemas/auth-schema';
 import { formsStore } from '@/features/forms/data/forms-store';
-import { formSchema, FORM_STATUS_VALUES, type FormStatus } from '@/features/forms/schemas/form-schema';
+import {
+  formInputSchema,
+  FORM_STATUS_VALUES,
+  type FormStatus
+} from '@/features/forms/schemas/form-schema';
 import type { SortOrder } from '@/types/api';
 
 export async function GET(request: NextRequest) {
@@ -36,7 +40,7 @@ export async function POST(request: Request) {
   }
 
   const body = await request.json();
-  const result = formSchema.safeParse(body);
+  const result = formInputSchema.safeParse(body);
 
   if (!result.success) {
     return NextResponse.json({ error: z.treeifyError(result.error) }, { status: 400 });
