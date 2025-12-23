@@ -7,3 +7,5 @@ export interface BaseEntity {
 export type Entity<T> = {
   [K in keyof T]: T[K];
 } & BaseEntity;
+
+export type SortOrder = 'asc' | 'desc';
