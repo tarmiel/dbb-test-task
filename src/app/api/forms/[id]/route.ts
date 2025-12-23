@@ -1,7 +1,6 @@
 import { z } from 'zod';
-import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
-import { USER_ROLE } from '@/features/auth/schemas/auth-schema';
+import { isAdmin } from '@/features/auth/utils/auth-cookies.server';
 import { formsStore } from '@/features/forms/data/forms-store';
 import { formInputSchema } from '@/features/forms/schemas/form-schema';
 
@@ -19,10 +18,7 @@ export async function GET(_request: Request, { params }: RouteParams) {
 }
 
 export async function PUT(request: Request, { params }: RouteParams) {
-  const cookieStore = await cookies();
-  const role = cookieStore.get('role')?.value;
-
-  if (role !== USER_ROLE.ADMIN) {
+  if (!(await isAdmin())) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
   }
 
@@ -44,10 +40,7 @@ export async function PUT(request: Request, { params }: RouteParams) {
 }
 
 export async function DELETE(_request: Request, { params }: RouteParams) {
-  const cookieStore = await cookies();
-  const role = cookieStore.get('role')?.value;
-
-  if (role !== USER_ROLE.ADMIN) {
+  if (!(await isAdmin())) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
   }
 

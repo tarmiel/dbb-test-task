@@ -6,6 +6,7 @@ import { Trash2 } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { AppPaths } from '@/config/app-paths';
+import { useToastStore, toastActionsSelector } from '@/stores/toast';
 import { deleteForm } from '@/features/forms/api/delete-form';
 
 interface DeleteFormButtonProps {
@@ -14,6 +15,7 @@ interface DeleteFormButtonProps {
 
 export function DeleteFormButton({ formId }: DeleteFormButtonProps) {
   const router = useRouter();
+  const { addToast } = useToastStore(toastActionsSelector);
   const [isPending, setIsPending] = useState(false);
 
   const handleDelete = async () => {
@@ -25,10 +27,12 @@ export function DeleteFormButton({ formId }: DeleteFormButtonProps) {
     const result = await deleteForm(formId);
 
     if (result.error) {
+      addToast(result.error, 'error');
       setIsPending(false);
       return;
     }
 
+    addToast('Form deleted successfully', 'success');
     router.push(AppPaths.app.forms.getHref());
   };
 

@@ -8,6 +8,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Button } from '@/components/ui/button';
 import { Input, Select, Textarea } from '@/components/ui/form';
 import { AppPaths } from '@/config/app-paths';
+import { useToastStore, toastActionsSelector } from '@/stores/toast';
 import { createForm } from '@/features/forms/api/create-form';
 import { updateForm } from '@/features/forms/api/update-form';
 import {
@@ -30,6 +31,7 @@ interface FormEditorProps {
 
 export function FormEditor({ form }: FormEditorProps) {
   const router = useRouter();
+  const { addToast } = useToastStore(toastActionsSelector);
   const [isPending, setIsPending] = useState(false);
   const isEditing = !!form;
 
@@ -47,10 +49,12 @@ export function FormEditor({ form }: FormEditorProps) {
     const result = isEditing ? await updateForm(form.id, data) : await createForm(data);
 
     if (result.error) {
+      addToast(result.error, 'error');
       setIsPending(false);
       return;
     }
 
+    addToast(isEditing ? 'Form updated successfully' : 'Form created successfully', 'success');
     router.push(AppPaths.app.forms.getHref());
   };
 

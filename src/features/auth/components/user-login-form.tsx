@@ -1,5 +1,9 @@
 'use client';
 
+import { useRouter, useSearchParams } from 'next/navigation';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+
 import { Button } from '@/components/ui/button';
 import { Input, Select } from '@/components/ui/form';
 import { AppPaths } from '@/config/app-paths';
@@ -10,9 +14,7 @@ import {
   type LoginInputData
 } from '@/features/auth/schemas/auth-schema';
 import { authActionsSelector, useAuthStore } from '@/features/auth/stores/auth-store';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useRouter, useSearchParams } from 'next/navigation';
-import { useForm } from 'react-hook-form';
+import { setAuthCookies } from '@/features/auth/utils/auth-cookies';
 
 const ROLE_OPTIONS = [
   { value: USER_ROLE.INDIVIDUAL, label: 'Individual' },
@@ -36,7 +38,7 @@ export function UserLoginForm() {
   });
 
   const onSubmit = (data: LoginInputData) => {
-    document.cookie = `role=${data.role}; path=/`;
+    setAuthCookies(data.email, data.role);
     setUser(data.email, data.role);
     router.replace(
       `${redirectTo ? `${decodeURIComponent(redirectTo)}` : AppPaths.app.forms.getHref()}`

@@ -1,7 +1,6 @@
 import { z } from 'zod';
-import { cookies } from 'next/headers';
 import { type NextRequest, NextResponse } from 'next/server';
-import { USER_ROLE } from '@/features/auth/schemas/auth-schema';
+import { isAdmin } from '@/features/auth/utils/auth-cookies.server';
 import { formsStore } from '@/features/forms/data/forms-store';
 import {
   formInputSchema,
@@ -32,10 +31,7 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: Request) {
-  const cookieStore = await cookies();
-  const role = cookieStore.get('role')?.value;
-
-  if (role !== USER_ROLE.ADMIN) {
+  if (!(await isAdmin())) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
   }
 
