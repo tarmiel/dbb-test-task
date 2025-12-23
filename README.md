@@ -2,6 +2,8 @@
 
 Mini-app for managing forms with role-based access, validation, SSR/SSG, and REST API.
 
+Deployed: [Vercel](https://dbb-test-task-wr8j.vercel.app/forms)
+
 ## Quick Start
 
 ```bash
@@ -87,16 +89,13 @@ This is the most common and stable approach I’ve used in practice. It mirrors 
 
 ### File-Based forms Storage
 
-Requirement allowed in-memory or JSON file. Started with in-memory singelton, but chose JSON file (`src/data/forms.json`) because:
-
-- Data persists across server restarts during development
-- Easy to inspect/reset data manually
-- Seed data loads automatically if file is empty
+Requirement allowed in-memory or JSON file. Used json file for forms data, but Vercel has restrictions for writing files, so it was decided to move back to in-memory store
 
 ## Screenshots
 
-> screenshots here
+![landing](/public/landing.png)
+![forms](/public/forms.png)
 
 ## Lighthouse Score
 
-> desktop Lighthouse score here (target: Performance ≥ 90)
+![lighthouse](/public/lighthouse.png)
