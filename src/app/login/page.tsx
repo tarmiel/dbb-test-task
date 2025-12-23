@@ -1,6 +1,8 @@
 import type { Metadata } from 'next';
 
 import { UserLoginForm } from '@/features/auth/components/user-login-form';
+import { Suspense } from 'react';
+import { Spinner } from '@/components/ui/spinner';
 
 export const metadata: Metadata = {
   title: 'Sign In',
@@ -19,7 +21,9 @@ export default function LoginPage() {
         </div>
 
         <div className="rounded-lg border border-border bg-card p-8">
-          <UserLoginForm />
+          <Suspense fallback={<Spinner className="h-12 w-12 mx-auto" />}>
+            <UserLoginForm />
+          </Suspense>
         </div>
       </div>
     </div>
