@@ -3,6 +3,7 @@ import Link from 'next/link';
 
 import { Button } from '@/components/ui/button';
 import { AppPaths } from '@/config/app-paths';
+import heroImage from '../../public/hero-image.jpg';
 
 export default function Home() {
   return (
@@ -31,12 +32,12 @@ export default function Home() {
 
         <div className="relative mt-16 w-full max-w-3xl overflow-hidden rounded-xl border border-border shadow-2xl">
           <Image
-            src="https://picsum.photos/seed/forms/1200/675"
+            src={heroImage}
             alt="Forms Dashboard Preview"
-            width={1200}
-            height={675}
             className="w-full"
+            placeholder="blur"
             priority
+            fetchPriority={'high'}
           />
         </div>
       </section>

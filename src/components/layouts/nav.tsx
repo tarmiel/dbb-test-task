@@ -35,7 +35,7 @@ export function Nav() {
           {user && (
             <Link
               href={AppPaths.app.forms.getHref()}
-              className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+              className="text-sm text-muted-foreground hover:text-foreground transition-colors hidden sm:block"
             >
               Forms
             </Link>
@@ -45,14 +45,14 @@ export function Nav() {
         <div className="flex items-center gap-4">
           {user ? (
             <>
-              <span className="text-sm text-muted-foreground">
-                {user.email}
+              <div className="text-sm text-muted-foreground">
+                <span className={'hidden sm:inline'}>{user.email}</span>
                 {user.role === USER_ROLE.ADMIN && (
                   <span className="ml-2 rounded bg-primary/10 px-1.5 py-0.5 text-xs text-primary">
                     Admin
                   </span>
                 )}
-              </span>
+              </div>
               <Button variant="ghost" size="sm" onClick={handleLogout}>
                 <LogOut className="mr-1 size-4" />
                 Logout
