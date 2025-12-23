@@ -1,10 +1,5 @@
 import { create } from 'zustand';
-import { UserRole } from '../schemas/auth-schema';
-
-interface User {
-  email: string;
-  role: UserRole;
-}
+import { User, UserRole } from '../schemas/auth-schema';
 
 interface AuthState {
   user: User | null;

@@ -9,6 +9,11 @@ export const USER_ROLE = {
 export type UserRole = ValueOf<typeof USER_ROLE>;
 export const USER_ROLE_VALUES = Object.values(USER_ROLE) satisfies UserRole[];
 
+export interface User {
+  email: string;
+  role: UserRole;
+}
+
 export const loginInputSchema = z.object({
   email: z.email('Invalid email address'),
   role: z.enum(USER_ROLE_VALUES)

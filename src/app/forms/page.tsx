@@ -1,3 +1,4 @@
+import type { Metadata } from 'next';
 import { cookies } from 'next/headers';
 import Link from 'next/link';
 import { Plus } from 'lucide-react';
@@ -11,6 +12,11 @@ import { FormsTable } from '@/features/forms/components/forms-table';
 import { parseSortOrder } from '@/features/forms/utils/parse-form-sort-order';
 import { parseStatusFilter } from '@/features/forms/utils/parse-form-status-filter';
 import { cn } from '@/utils/cn';
+
+export const metadata: Metadata = {
+  title: 'Forms',
+  description: 'View all the forms'
+};
 
 interface FormsPageProps {
   searchParams: Promise<{ status?: string; sort?: string }>;

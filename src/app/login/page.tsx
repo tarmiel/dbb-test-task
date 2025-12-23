@@ -1,4 +1,11 @@
+import type { Metadata } from 'next';
+
 import { UserLoginForm } from '@/features/auth/components/user-login-form';
+
+export const metadata: Metadata = {
+  title: 'Sign In',
+  description: 'Sign in to access the Forms Dashboard'
+};
 
 export default function LoginPage() {
   return (

@@ -1,3 +1,4 @@
+import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 
 import { getForm } from '@/features/forms/api/get-form';
@@ -6,6 +7,20 @@ import { DeleteFormButton } from '@/features/forms/components/delete-form-button
 
 interface EditFormPageProps {
   params: Promise<{ id: string }>;
+}
+
+export async function generateMetadata({ params }: EditFormPageProps): Promise<Metadata> {
+  const { id } = await params;
+  const form = await getForm(id);
+
+  if (!form) {
+    return { title: 'Form Not Found' };
+  }
+
+  return {
+    title: `Edit: ${form.title}`,
+    description: form.description || `Edit form: ${form.title}`
+  };
 }
 
 export default async function EditFormPage({ params }: EditFormPageProps) {
