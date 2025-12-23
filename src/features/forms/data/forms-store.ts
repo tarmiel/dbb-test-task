@@ -1,49 +1,53 @@
-import { FORM_STATUS, type FormInputData, type FormRecord } from '../schemas/form-schema';
+import fs from 'fs';
+import path from 'path';
+import { type FormInputData, type FormRecord } from '../schemas/form-schema';
 
-const SEED_DATA: FormRecord[] = [
-  {
-    id: '1',
-    title: 'Contact Form',
-    description: 'Basic contact form for website',
-    fieldsCount: 5,
-    status: FORM_STATUS.ACTIVE,
-    createdAt: '2025-12-21T10:00:00Z',
-    updatedAt: '2025-12-22T15:30:00Z'
-  },
-  {
-    id: '2',
-    title: 'Newsletter Signup',
-    description: 'Email subscription form',
-    fieldsCount: 2,
-    status: FORM_STATUS.DRAFT,
-    createdAt: '2025-12-21T09:00:00Z',
-    updatedAt: '2025-12-22T11:00:00Z'
-  },
-  {
-    id: '3',
-    title: 'Customer Feedback',
-    description: 'Feedback survey for customers',
-    fieldsCount: 10,
-    status: FORM_STATUS.ARCHIVED,
-    createdAt: '2025-12-21T14:00:00Z',
-    updatedAt: '2025-12-22T16:45:00Z'
+const DATA_DIR = path.join(process.cwd(), 'src/data');
+const DATA_PATH = path.join(DATA_DIR, 'forms.json');
+const SEED_PATH = path.join(DATA_DIR, 'forms-seed.json');
+
+class FormsStoreService {
+  constructor() {
+    this.init();
   }
-];
 
-class FormsStore {
-  private forms: FormRecord[] = [...SEED_DATA];
+  private init(): void {
+    try {
+      const forms = this.read();
+      if (forms.length === 0) {
+        this.seed();
+      }
+    } catch {
+      this.seed();
+    }
+  }
+
+  private read(): FormRecord[] {
+    const data = fs.readFileSync(DATA_PATH, 'utf-8');
+    return JSON.parse(data);
+  }
+
+  private write(forms: FormRecord[]): void {
+    fs.writeFileSync(DATA_PATH, JSON.stringify(forms, null, 2));
+  }
+
+  private seed(): void {
+    const data = fs.readFileSync(SEED_PATH, 'utf-8');
+    fs.writeFileSync(DATA_PATH, data);
+  }
 
   getAll(): FormRecord[] {
-    return [...this.forms].sort(
+    return this.read().sort(
       (a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
     );
   }
 
   getById(id: string): FormRecord | undefined {
-    return this.forms.find((form) => form.id === id);
+    return this.read().find((form) => form.id === id);
   }
 
   create(data: FormInputData): FormRecord {
+    const forms = this.read();
     const now = new Date().toISOString();
     const newForm: FormRecord = {
       ...data,
@@ -51,29 +55,39 @@ class FormsStore {
       createdAt: now,
       updatedAt: now
     };
-    this.forms.push(newForm);
+    forms.push(newForm);
+    this.write(forms);
     return newForm;
   }
 
   update(id: string, data: Partial<FormInputData>): FormRecord | undefined {
-    const index = this.forms.findIndex((form) => form.id === id);
+    const forms = this.read();
+    const index = forms.findIndex((form) => form.id === id);
     if (index === -1) return undefined;
 
     const updated: FormRecord = {
-      ...this.forms[index],
+      ...forms[index],
       ...data,
       updatedAt: new Date().toISOString()
     };
-    this.forms[index] = updated;
+    forms[index] = updated;
+    this.write(forms);
     return updated;
   }
 
   delete(id: string): boolean {
-    const index = this.forms.findIndex((form) => form.id === id);
+    const forms = this.read();
+    const index = forms.findIndex((form) => form.id === id);
     if (index === -1) return false;
-    this.forms.splice(index, 1);
+
+    forms.splice(index, 1);
+    this.write(forms);
     return true;
+  }
+
+  reset(): void {
+    this.seed();
   }
 }
 
-export const formsStore = new FormsStore();
+export const formsStore = new FormsStoreService();
