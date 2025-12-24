@@ -1,30 +1,39 @@
+import { Redis } from '@upstash/redis';
 import { type FormInputData, type FormRecord } from '../schemas/form-schema';
 import seedData from '@/data/forms-seed.json';
 
-class FormsStoreService {
-  private forms: FormRecord[] = [];
+const redis = Redis.fromEnv();
+const FORMS_KEY = 'app_forms';
 
+class FormsStoreService {
   constructor() {
     this.seed();
   }
 
-  private seed(): void {
-    if (this.forms.length > 0) return;
+  private async seed(): Promise<void> {
+    const forms = await redis.get<FormRecord[]>(FORMS_KEY);
+    if (forms) return;
 
-    this.forms = seedData.map((form) => ({ ...form })) as FormRecord[];
+    const initial = seedData.map((f) => ({ ...f })) as FormRecord[];
+    await redis.set(FORMS_KEY, initial);
   }
 
-  getAll(): FormRecord[] {
-    return [...this.forms].sort(
-      (a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
-    );
+  private async getForms(): Promise<FormRecord[]> {
+    return (await redis.get<FormRecord[]>(FORMS_KEY)) ?? [];
   }
 
-  getById(id: string): FormRecord | undefined {
-    return this.forms.find((form) => form.id === id);
+  async getAll(): Promise<FormRecord[]> {
+    const forms = await this.getForms();
+    return forms.sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime());
   }
 
-  create(data: FormInputData): FormRecord {
+  async getById(id: string): Promise<FormRecord | undefined> {
+    const forms = await this.getForms();
+    return forms.find((form) => form.id === id);
+  }
+
+  async create(data: FormInputData): Promise<FormRecord> {
+    const forms = await this.getForms();
     const now = new Date().toISOString();
 
     const newForm: FormRecord = {
@@ -34,41 +43,40 @@ class FormsStoreService {
       updatedAt: now
     };
 
-    this.forms.push(newForm);
+    forms.push(newForm);
+    await redis.set(FORMS_KEY, forms);
     return newForm;
   }
 
-  update(id: string, data: Partial<FormInputData>): FormRecord | undefined {
-    const index = this.forms.findIndex((form) => form.id === id);
+  async update(id: string, data: Partial<FormInputData>): Promise<FormRecord | undefined> {
+    const forms = await this.getForms();
+    const index = forms.findIndex((form) => form.id === id);
     if (index === -1) return undefined;
 
-    const updated: FormRecord = {
-      ...this.forms[index],
+    forms[index] = {
+      ...forms[index],
       ...data,
       updatedAt: new Date().toISOString()
     };
 
-    this.forms[index] = updated;
-    return updated;
+    await redis.set(FORMS_KEY, forms);
+    return forms[index];
   }
 
-  delete(id: string): boolean {
-    const index = this.forms.findIndex((form) => form.id === id);
+  async delete(id: string): Promise<boolean> {
+    const forms = await this.getForms();
+    const index = forms.findIndex((form) => form.id === id);
     if (index === -1) return false;
 
-    this.forms.splice(index, 1);
+    forms.splice(index, 1);
+    await redis.set(FORMS_KEY, forms);
     return true;
   }
 
-  reset(): void {
-    this.forms = [];
-    this.seed();
+  async reset(): Promise<void> {
+    const initial = seedData.map((f) => ({ ...f })) as FormRecord[];
+    await redis.set(FORMS_KEY, initial);
   }
 }
 
-const globalForLogger = globalThis as typeof globalThis & { __formsStore?: FormsStoreService };
-if (!globalForLogger.__formsStore) {
-  globalForLogger.__formsStore = new FormsStoreService();
-  console.log('Global forms store initialized');
-}
-export const formsStore = globalForLogger.__formsStore!;
+export const formsStore = new FormsStoreService();

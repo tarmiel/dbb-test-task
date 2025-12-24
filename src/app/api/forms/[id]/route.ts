@@ -11,7 +11,7 @@ type RouteParams = { params: Promise<{ id: string }> };
 
 export async function GET(_request: Request, { params }: RouteParams) {
   const { id } = await params;
-  const form = formsStore.getById(id);
+  const form = await formsStore.getById(id);
 
   if (!form) {
     return NextResponse.json({ error: 'Form not found' }, { status: 404 });
@@ -33,7 +33,7 @@ export async function PUT(request: Request, { params }: RouteParams) {
     return NextResponse.json({ error: z.treeifyError(result.error) }, { status: 400 });
   }
 
-  const updated = formsStore.update(id, result.data);
+  const updated = await formsStore.update(id, result.data);
 
   if (!updated) {
     return NextResponse.json({ error: 'Form not found' }, { status: 404 });
@@ -50,7 +50,7 @@ export async function DELETE(_request: Request, { params }: RouteParams) {
   }
 
   const { id } = await params;
-  const deleted = formsStore.delete(id);
+  const deleted = await formsStore.delete(id);
 
   if (!deleted) {
     return NextResponse.json({ error: 'Form not found' }, { status: 404 });

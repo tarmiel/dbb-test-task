@@ -13,7 +13,7 @@ export interface GetFormsParams {
 
 export async function getForms(params?: GetFormsParams): Promise<FormRecord[]> {
   noStore();
-  let forms = formsStore.getAll();
+  let forms = await formsStore.getAll();
 
   if (params?.status) {
     forms = forms.filter((form) => form.status === params.status);
@@ -28,5 +28,5 @@ export async function getForms(params?: GetFormsParams): Promise<FormRecord[]> {
 
 export async function getForm(id: string): Promise<FormRecord | null> {
   noStore();
-  return formsStore.getById(id) ?? null;
+  return (await formsStore.getById(id)) ?? null;
 }

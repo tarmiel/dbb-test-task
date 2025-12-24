@@ -17,7 +17,7 @@ export async function GET(request: NextRequest) {
   const status = searchParams.get('status') as FormStatus | null;
   const sortOrder = (searchParams.get('sortOrder') as SortOrder) ?? 'desc';
 
-  let forms = formsStore.getAll();
+  let forms = await formsStore.getAll();
 
   // Filter by status
   if (status && FORM_STATUS_VALUES.includes(status)) {
@@ -45,7 +45,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: z.treeifyError(result.error) }, { status: 400 });
   }
 
-  const created = formsStore.create(result.data);
+  const created = await formsStore.create(result.data);
   revalidatePath(AppPaths.app.forms.getHref());
   return NextResponse.json(created, { status: 201 });
 }
