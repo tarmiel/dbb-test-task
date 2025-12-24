@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://dbb-test-task.vercel.app/sitemap.xml
