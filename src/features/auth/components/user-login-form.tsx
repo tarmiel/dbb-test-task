@@ -1,12 +1,11 @@
 'use client';
 
-import { useRouter, useSearchParams } from 'next/navigation';
-import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useSearchParams } from 'next/navigation';
+import { useForm } from 'react-hook-form';
 
 import { Button } from '@/components/ui/button';
 import { Input, Select } from '@/components/ui/form';
-import { AppPaths } from '@/config/app-paths';
 import {
   getLoginFormDefaults,
   loginInputSchema,
@@ -14,7 +13,7 @@ import {
   type LoginInputData
 } from '@/features/auth/schemas/auth-schema';
 import { authActionsSelector, useAuthStore } from '@/features/auth/stores/auth-store';
-import { setAuthCookies } from '@/features/auth/utils/auth-cookies';
+import { loginAction } from '../actions/login';
 
 const ROLE_OPTIONS = [
   { value: USER_ROLE.INDIVIDUAL, label: 'Individual' },
@@ -22,7 +21,6 @@ const ROLE_OPTIONS = [
 ];
 
 export function UserLoginForm() {
-  const router = useRouter();
   const searchParams = useSearchParams();
   const redirectTo = searchParams?.get('redirectTo');
 
@@ -37,12 +35,10 @@ export function UserLoginForm() {
     defaultValues: getLoginFormDefaults()
   });
 
-  const onSubmit = (data: LoginInputData) => {
-    setAuthCookies(data.email, data.role);
+  const onSubmit = async (data: LoginInputData) => {
     setUser(data.email, data.role);
-    router.replace(
-      `${redirectTo ? `${decodeURIComponent(redirectTo)}` : AppPaths.app.forms.getHref()}`
-    );
+
+    await loginAction(data, redirectTo);
   };
 
   return (

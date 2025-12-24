@@ -20,13 +20,3 @@ export function getAuthFromCookies(): { email: string; role: UserRole } | null {
 
   return { email, role: role as UserRole };
 }
-
-export function setAuthCookies(email: string, role: UserRole): void {
-  document.cookie = `${COOKIE_KEYS.role}=${role}; path=/`;
-  document.cookie = `${COOKIE_KEYS.email}=${encodeURIComponent(email)}; path=/`;
-}
-
-export function clearAuthCookies(): void {
-  document.cookie = `${COOKIE_KEYS.role}=; path=/; max-age=0`;
-  document.cookie = `${COOKIE_KEYS.email}=; path=/; max-age=0`;
-}

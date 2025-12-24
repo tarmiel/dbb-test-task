@@ -1,31 +1,29 @@
 'use client';
 
-import { useState } from 'react';
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
 import { LogOut, Menu, X } from 'lucide-react';
+import Link from 'next/link';
+import { useState } from 'react';
 
 import { Button } from '@/components/ui/button';
 import { AppPaths } from '@/config/app-paths';
-import {
-  useAuthStore,
-  authUserSelector,
-  authActionsSelector
-} from '@/features/auth/stores/auth-store';
+import { logoutAction } from '@/features/auth/actions/login';
 import { USER_ROLE } from '@/features/auth/schemas/auth-schema';
-import { clearAuthCookies } from '@/features/auth/utils/auth-cookies';
+import {
+  authActionsSelector,
+  authUserSelector,
+  useAuthStore
+} from '@/features/auth/stores/auth-store';
 
 export function Nav() {
-  const router = useRouter();
   const user = useAuthStore(authUserSelector);
   const { logout } = useAuthStore(authActionsSelector);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  const handleLogout = () => {
-    clearAuthCookies();
+  const handleLogout = async () => {
     logout();
     setMobileMenuOpen(false);
-    router.push(AppPaths.auth.login.getHref());
+
+    await logoutAction();
   };
 
   return (
