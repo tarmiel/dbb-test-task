@@ -2,7 +2,7 @@
 
 Mini-app for managing forms with role-based access, validation, SSR/SSG, and REST API.
 
-Deployed: [Vercel](https://dbb-test-task-wr8j.vercel.app/forms)
+Deployed: [Vercel](https://dbb-test-task.vercel.app)
 
 ## Quick Start
 
@@ -89,7 +89,15 @@ This is the most common and stable approach I’ve used in practice. It mirrors 
 
 ### File-Based forms Storage
 
-Requirement allowed in-memory or JSON file. Used json file for forms data, but Vercel has restrictions for writing files, so it was decided to move back to in-memory store
+### Forms Storage
+
+The requirement allowed in-memory or JSON file storage. Initially used an in-memory singleton pattern, which worked perfectly in local development.
+
+After deploying to Vercel, data wasn't persisting correctly. The issue: Vercel runs serverless functions (lambdas), and each instance has its own isolated memory. A POST request might hit Instance A, while a GET request hits Instance B with its own separate data.
+
+JSON file storage wasn't an option either — Vercel's filesystem is read-only in production.
+
+Solution: Moved to KV via Vercel for shared persistent storage across all serverless instances.
 
 ## Screenshots
 
@@ -98,4 +106,5 @@ Requirement allowed in-memory or JSON file. Used json file for forms data, but V
 
 ## Lighthouse Score
 
+![lighthouse](/public/landing-l.png)
 ![lighthouse](/public/lighthouse.png)
