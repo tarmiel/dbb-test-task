@@ -1,17 +1,16 @@
-import type { Metadata } from 'next';
-import { cookies } from 'next/headers';
-import Link from 'next/link';
 import { Plus } from 'lucide-react';
+import type { Metadata } from 'next';
+import Link from 'next/link';
 
 import { buttonVariants } from '@/components/ui/button';
 import { AppPaths } from '@/config/app-paths';
-import { USER_ROLE } from '@/features/auth/schemas/auth-schema';
-import { getForms } from '@/features/forms/api/get-forms';
 import { FormsFilter } from '@/features/forms/components/forms-filter';
 import { FormsTable } from '@/features/forms/components/forms-table';
+import { getForms } from '@/features/forms/data/queries';
 import { parseSortOrder } from '@/features/forms/utils/parse-form-sort-order';
 import { parseStatusFilter } from '@/features/forms/utils/parse-form-status-filter';
 import { cn } from '@/utils/cn';
+import { isAdmin } from '@/features/auth/utils/auth-cookies.server';
 
 export const metadata: Metadata = {
   title: 'Forms',
@@ -24,9 +23,7 @@ interface FormsPageProps {
 
 export default async function FormsPage({ searchParams }: FormsPageProps) {
   const { status, sort } = await searchParams;
-  const cookieStore = await cookies();
-  const role = cookieStore.get('role')?.value;
-  const isAdmin = role === USER_ROLE.ADMIN;
+  const isUserAdmin = await isAdmin();
 
   const forms = await getForms({
     status: parseStatusFilter(status),
@@ -39,7 +36,7 @@ export default async function FormsPage({ searchParams }: FormsPageProps) {
         <h1 className="text-2xl font-bold">Forms</h1>
         <div className="flex items-center gap-3 flex-wrap-reverse justify-end">
           <FormsFilter />
-          {isAdmin && (
+          {isUserAdmin && (
             <Link href={AppPaths.app.forms_new.getHref()} className={cn(buttonVariants(), 'gap-1')}>
               <Plus className="size-4" />
               New Form
@@ -48,7 +45,7 @@ export default async function FormsPage({ searchParams }: FormsPageProps) {
         </div>
       </div>
 
-      <FormsTable forms={forms} isAdmin={isAdmin} />
+      <FormsTable forms={forms} isAdmin={isUserAdmin} />
     </div>
   );
 }

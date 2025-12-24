@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 
-import { getForm } from '@/features/forms/api/get-form';
+import { getForm } from '@/features/forms/data/queries';
 import { FormEditor } from '@/features/forms/components/form-editor';
 import { DeleteFormButton } from '@/features/forms/components/delete-form-button';
 

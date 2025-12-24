@@ -1,10 +1,12 @@
-import { z } from 'zod';
+import { revalidatePath } from 'next/cache';
 import { type NextRequest, NextResponse } from 'next/server';
+import { z } from 'zod';
+
 import { isAdmin } from '@/features/auth/utils/auth-cookies.server';
 import { formsStore } from '@/features/forms/data/forms-store';
 import {
-  formInputSchema,
   FORM_STATUS_VALUES,
+  formInputSchema,
   type FormStatus
 } from '@/features/forms/schemas/form-schema';
 import type { SortOrder } from '@/types/api';
@@ -43,5 +45,6 @@ export async function POST(request: Request) {
   }
 
   const created = formsStore.create(result.data);
+  revalidatePath('/forms');
   return NextResponse.json(created, { status: 201 });
 }

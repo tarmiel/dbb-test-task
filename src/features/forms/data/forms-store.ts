@@ -66,4 +66,8 @@ class FormsStoreService {
   }
 }
 
-export const formsStore = new FormsStoreService();
+// globalThis to ensure true singleton across Next.js module contexts
+// (Server Components and Route Handlers may re-instantiate modules)
+const globalForStore = globalThis as unknown as { formsStore: FormsStoreService | undefined };
+
+export const formsStore = (globalForStore.formsStore ??= new FormsStoreService());

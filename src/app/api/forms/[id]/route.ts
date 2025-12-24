@@ -1,5 +1,7 @@
-import { z } from 'zod';
+import { revalidatePath } from 'next/cache';
 import { NextResponse } from 'next/server';
+import { z } from 'zod';
+
 import { isAdmin } from '@/features/auth/utils/auth-cookies.server';
 import { formsStore } from '@/features/forms/data/forms-store';
 import { formInputSchema } from '@/features/forms/schemas/form-schema';
@@ -36,6 +38,8 @@ export async function PUT(request: Request, { params }: RouteParams) {
     return NextResponse.json({ error: 'Form not found' }, { status: 404 });
   }
 
+  revalidatePath('/forms');
+  revalidatePath(`/forms/${id}`);
   return NextResponse.json(updated);
 }
 
@@ -51,5 +55,6 @@ export async function DELETE(_request: Request, { params }: RouteParams) {
     return NextResponse.json({ error: 'Form not found' }, { status: 404 });
   }
 
+  revalidatePath('/forms');
   return new NextResponse(null, { status: 204 });
 }
