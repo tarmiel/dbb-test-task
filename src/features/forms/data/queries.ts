@@ -2,7 +2,7 @@ import 'server-only';
 
 import { unstable_noStore as noStore } from 'next/cache';
 
-import { formsStore } from './forms-store';
+import { formsStore } from '@/features/forms/data/forms-store';
 import type { FormRecord, FormStatus } from '../schemas/form-schema';
 import type { SortOrder } from '@/types/api';
 

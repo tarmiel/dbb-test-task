@@ -10,6 +10,7 @@ import {
   type FormStatus
 } from '@/features/forms/schemas/form-schema';
 import type { SortOrder } from '@/types/api';
+import { AppPaths } from '@/config/app-paths';
 
 export async function GET(request: NextRequest) {
   const { searchParams } = request.nextUrl;
@@ -45,6 +46,6 @@ export async function POST(request: Request) {
   }
 
   const created = formsStore.create(result.data);
-  revalidatePath('/forms');
+  revalidatePath(AppPaths.app.forms.getHref());
   return NextResponse.json(created, { status: 201 });
 }

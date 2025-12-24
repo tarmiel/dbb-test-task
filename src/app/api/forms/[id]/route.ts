@@ -5,6 +5,7 @@ import { z } from 'zod';
 import { isAdmin } from '@/features/auth/utils/auth-cookies.server';
 import { formsStore } from '@/features/forms/data/forms-store';
 import { formInputSchema } from '@/features/forms/schemas/form-schema';
+import { AppPaths } from '@/config/app-paths';
 
 type RouteParams = { params: Promise<{ id: string }> };
 
@@ -38,8 +39,8 @@ export async function PUT(request: Request, { params }: RouteParams) {
     return NextResponse.json({ error: 'Form not found' }, { status: 404 });
   }
 
-  revalidatePath('/forms');
-  revalidatePath(`/forms/${id}`);
+  revalidatePath(AppPaths.app.forms.getHref());
+  revalidatePath(AppPaths.app.form.getHref(id));
   return NextResponse.json(updated);
 }
 
@@ -55,6 +56,6 @@ export async function DELETE(_request: Request, { params }: RouteParams) {
     return NextResponse.json({ error: 'Form not found' }, { status: 404 });
   }
 
-  revalidatePath('/forms');
+  revalidatePath(AppPaths.app.forms.getHref());
   return new NextResponse(null, { status: 204 });
 }

@@ -66,8 +66,9 @@ class FormsStoreService {
   }
 }
 
-// globalThis to ensure true singleton across Next.js module contexts
-// (Server Components and Route Handlers may re-instantiate modules)
-const globalForStore = globalThis as unknown as { formsStore: FormsStoreService | undefined };
-
-export const formsStore = (globalForStore.formsStore ??= new FormsStoreService());
+const globalForLogger = globalThis as typeof globalThis & { __formsStore?: FormsStoreService };
+if (!globalForLogger.__formsStore) {
+  globalForLogger.__formsStore = new FormsStoreService();
+  console.log('Global forms store initialized');
+}
+export const formsStore = globalForLogger.__formsStore!;
