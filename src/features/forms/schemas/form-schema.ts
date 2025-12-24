@@ -14,7 +14,11 @@ export const FORM_STATUS_VALUES = Object.values(FORM_STATUS) satisfies FormStatu
 export const formInputSchema = z.object({
   title: z.string().min(3, 'Title must be at least 3 characters'),
   description: z.string().optional(),
-  fieldsCount: z.number().int().min(0).max(50),
+  fieldsCount: z
+    .number()
+    .int('Must be a whole number')
+    .min(0, 'Must be 0 or greater')
+    .max(50, 'Maximum 50 fields allowed'),
   status: z.enum(FORM_STATUS_VALUES)
 });
 
